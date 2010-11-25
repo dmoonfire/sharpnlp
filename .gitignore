@@ -1,0 +1,8 @@
+*.pidb
+*.resources
+*.userprefs
+*~
+
+/build
+obj
+bin
