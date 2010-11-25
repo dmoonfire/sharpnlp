@@ -491,9 +491,9 @@ namespace SharpWordNet
 
             public PosDataFileSet(string dataFolder, string partOfSpeech)
             {
-                mIndexFile = new StreamReader(dataFolder + "\\index." + partOfSpeech);
-                mDataFile = new StreamReader(dataFolder + "\\data." + partOfSpeech);
-                mExceptionFile = new StreamReader(dataFolder + "\\" + partOfSpeech + ".exc");
+                mIndexFile = new StreamReader(Path.Combine(dataFolder, "index." + partOfSpeech));
+                mDataFile = new StreamReader(Path.Combine(dataFolder, "data." + partOfSpeech));
+                mExceptionFile = new StreamReader(Path.Combine(dataFolder, partOfSpeech + ".exc"));
             }
         }
 

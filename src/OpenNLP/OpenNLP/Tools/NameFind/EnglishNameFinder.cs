@@ -35,6 +35,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using OpenNLP.Tools.Util;
 using OpenNLP.Tools.Parser;
 
@@ -46,7 +47,7 @@ namespace OpenNLP.Tools.NameFind
 		private Dictionary<string, MaximumEntropyNameFinder> mFinders;
 		private string mModelPath;
 
-        public static string[] NameTypes = new string[] { "person", "organization", "location", "date", "time", "percentage", "money" };
+        public static string[] NameTypes = new string[] { "person", /*"organization",*/ "location", "date", "time", "percentage", "money" };
 		
 		public EnglishNameFinder(string modelPath)
 		{
@@ -351,7 +352,7 @@ namespace OpenNLP.Tools.NameFind
 			{
 				if (!mFinders.ContainsKey(models[currentModel]))
 				{
-					string modelName = mModelPath + models[currentModel] + ".nbin";
+					string modelName = Path.Combine(mModelPath, models[currentModel] + ".nbin");
 					SharpEntropy.IMaximumEntropyModel model = new SharpEntropy.GisModel(new SharpEntropy.IO.BinaryGisModelReader(modelName));
 					MaximumEntropyNameFinder finder = new MaximumEntropyNameFinder(model);
 					mFinders.Add(models[currentModel], finder);

@@ -3,6 +3,7 @@
 *.userprefs
 *~
 
-/build
+build
 obj
 bin
+models

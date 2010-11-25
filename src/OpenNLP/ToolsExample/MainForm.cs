@@ -2,6 +2,7 @@ using System;
 using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
+using System.IO;
 using System.Windows.Forms;
 using System.Data;
 using System.Text;
@@ -31,6 +32,7 @@ namespace ToolsExample
 		private System.ComponentModel.Container components = null;
 
 		private string mModelPath;
+		private string mParserPath;
 
 		private OpenNLP.Tools.SentenceDetect.MaximumEntropySentenceDetector mSentenceDetector;
 		private OpenNLP.Tools.Tokenize.EnglishMaximumEntropyTokenizer mTokenizer;
@@ -48,6 +50,12 @@ namespace ToolsExample
 			InitializeComponent();
 
 			mModelPath = ConfigurationManager.AppSettings["MaximumEntropyModelDirectory"];
+			mParserPath = ConfigurationManager.AppSettings["ParserDirectory"];
+			
+			if (string.IsNullOrEmpty(mParserPath))
+			{
+				mParserPath = mModelPath;
+			}
 		}
 
 		/// <summary>
@@ -322,7 +330,7 @@ namespace ToolsExample
 		{
 			if (mSentenceDetector == null)
 			{
-				mSentenceDetector = new OpenNLP.Tools.SentenceDetect.EnglishMaximumEntropySentenceDetector(mModelPath + "EnglishSD.nbin");
+				mSentenceDetector = new OpenNLP.Tools.SentenceDetect.EnglishMaximumEntropySentenceDetector(Path.Combine(mModelPath, "EnglishSD.nbin"));
 			}
 
 			return mSentenceDetector.SentenceDetect(paragraph);
@@ -332,7 +340,7 @@ namespace ToolsExample
 		{
 			if (mTokenizer == null)
 			{
-				mTokenizer = new OpenNLP.Tools.Tokenize.EnglishMaximumEntropyTokenizer(mModelPath + "EnglishTok.nbin");
+				mTokenizer = new OpenNLP.Tools.Tokenize.EnglishMaximumEntropyTokenizer(Path.Combine(mModelPath, "EnglishTok.nbin"));
 			}
 
 			return mTokenizer.Tokenize(sentence);
@@ -342,7 +350,7 @@ namespace ToolsExample
 		{
 			if (mPosTagger == null)
 			{
-				mPosTagger = new OpenNLP.Tools.PosTagger.EnglishMaximumEntropyPosTagger(mModelPath + "EnglishPOS.nbin", mModelPath + @"\Parser\tagdict");
+				mPosTagger = new OpenNLP.Tools.PosTagger.EnglishMaximumEntropyPosTagger(Path.Combine(mModelPath, "EnglishPOS.nbin"), Path.Combine(mParserPath, "tagdict"));
 			}
 
 			return mPosTagger.Tag(tokens);
@@ -352,7 +360,7 @@ namespace ToolsExample
 		{
 			if (mChunker == null)
 			{
-				mChunker = new OpenNLP.Tools.Chunker.EnglishTreebankChunker(mModelPath + "EnglishChunk.nbin");
+				mChunker = new OpenNLP.Tools.Chunker.EnglishTreebankChunker(Path.Combine(mModelPath, "EnglishChunk.nbin"));
 			}
 			
 			return mChunker.GetChunks(tokens, tags);
@@ -372,10 +380,10 @@ namespace ToolsExample
 		{
 			if (mNameFinder == null)
 			{
-				mNameFinder = new OpenNLP.Tools.NameFind.EnglishNameFinder(mModelPath + "namefind\\");
+				mNameFinder = new OpenNLP.Tools.NameFind.EnglishNameFinder(mModelPath);
 			}
 
-			string[] models = new string[] {"date", "location", "money", "organization", "percentage", "person", "time"};
+			string[] models = new string[] {"date", "location", "money", /*"organization",*/ "percentage", "person", "time"};
 			return mNameFinder.GetNames(models, sentence);
 		}
 
@@ -383,10 +391,10 @@ namespace ToolsExample
         {
             if (mNameFinder == null)
             {
-                mNameFinder = new OpenNLP.Tools.NameFind.EnglishNameFinder(mModelPath + "namefind\\");
+                mNameFinder = new OpenNLP.Tools.NameFind.EnglishNameFinder(mModelPath);
             }
 
-            string[] models = new string[] { "date", "location", "money", "organization", "percentage", "person", "time" };
+            string[] models = new string[] { "date", "location", "money", /*"organization",*/ "percentage", "person", "time" };
             return mNameFinder.GetNames(models, sentenceParse);
         }
 
@@ -394,7 +402,7 @@ namespace ToolsExample
         {
             if (mCoreferenceFinder == null)
             {
-                mCoreferenceFinder = new OpenNLP.Tools.Lang.English.TreebankLinker(mModelPath + "coref");
+                mCoreferenceFinder = new OpenNLP.Tools.Lang.English.TreebankLinker(Path.Combine(mModelPath, "coref"));
             }
 
             System.Collections.Generic.List<OpenNLP.Tools.Parser.Parse> parsedSentences = new System.Collections.Generic.List<OpenNLP.Tools.Parser.Parse>();
@@ -430,7 +438,7 @@ namespace ToolsExample
 
                 output.Append(posTaggedSentence);
                 output.Append("\r\n");
-                output.Append(OpenNLP.Tools.Coreference.Similarity.GenderModel.GenderMain(mModelPath + "coref\\gen", posTaggedSentence));
+                output.Append(OpenNLP.Tools.Coreference.Similarity.GenderModel.GenderMain(Path.Combine(mModelPath, Path.Combine("coref", "gen")), posTaggedSentence));
                 output.Append("\r\n\r\n");
             }
 
@@ -457,7 +465,7 @@ namespace ToolsExample
 
                 output.Append(posTaggedSentence);
                 output.Append("\r\n");
-                output.Append(OpenNLP.Tools.Coreference.Similarity.SimilarityModel.SimilarityMain(mModelPath + "coref\\sim", posTaggedSentence));
+                output.Append(OpenNLP.Tools.Coreference.Similarity.SimilarityModel.SimilarityMain(Path.Combine(mModelPath, Path.Combine("coref", "sim")), posTaggedSentence));
                 output.Append("\r\n\r\n");
             }
 

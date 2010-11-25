@@ -36,6 +36,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 
 namespace OpenNLP.Tools.Parser
 {
@@ -50,29 +51,29 @@ namespace OpenNLP.Tools.Parser
 
 		public EnglishTreebankParser(string dataDirectory, bool useTagDictionary, bool useCaseSensitiveTagDictionary, int beamSize, double advancePercentage)
 		{
-			SharpEntropy.IO.BinaryGisModelReader buildModelReader = new SharpEntropy.IO.BinaryGisModelReader(dataDirectory + "parser\\build.nbin");
+			SharpEntropy.IO.BinaryGisModelReader buildModelReader = new SharpEntropy.IO.BinaryGisModelReader(Path.Combine(dataDirectory, "build.nbin"));
 			SharpEntropy.GisModel buildModel = new SharpEntropy.GisModel(buildModelReader);
 
-			SharpEntropy.IO.BinaryGisModelReader checkModelReader = new SharpEntropy.IO.BinaryGisModelReader(dataDirectory + "parser\\check.nbin");
+			SharpEntropy.IO.BinaryGisModelReader checkModelReader = new SharpEntropy.IO.BinaryGisModelReader(Path.Combine(dataDirectory, "check.nbin"));
 			SharpEntropy.IMaximumEntropyModel checkModel = new SharpEntropy.GisModel(checkModelReader);
 
 			EnglishTreebankPosTagger posTagger;
 
 			if (useTagDictionary)
 			{
-				posTagger = new EnglishTreebankPosTagger(dataDirectory + "parser\\tag.nbin", dataDirectory + "parser\\tagdict", useCaseSensitiveTagDictionary);
+				posTagger = new EnglishTreebankPosTagger(Path.Combine(dataDirectory, "tag.nbin"), Path.Combine(dataDirectory, "tagdict"), useCaseSensitiveTagDictionary);
 			}
 			else
 			{
-				posTagger = new EnglishTreebankPosTagger(dataDirectory + "parser\\tag.nbin");
+				posTagger = new EnglishTreebankPosTagger(Path.Combine(dataDirectory, "tag.nbin"));
 			}
 
-			EnglishTreebankParserChunker chunker = new EnglishTreebankParserChunker(dataDirectory + "parser\\chunk.nbin");
-			EnglishHeadRules headRules = new EnglishHeadRules(dataDirectory + "parser\\head_rules");
+			EnglishTreebankParserChunker chunker = new EnglishTreebankParserChunker(Path.Combine(dataDirectory, "chunk.nbin"));
+			EnglishHeadRules headRules = new EnglishHeadRules(Path.Combine(dataDirectory, "head_rules"));
 
 			mParser = new MaximumEntropyParser(buildModel, checkModel, posTagger, chunker, headRules, beamSize, advancePercentage);
 		
-			mTokenizer = new OpenNLP.Tools.Tokenize.EnglishMaximumEntropyTokenizer(dataDirectory + "EnglishTok.nbin");
+			mTokenizer = new OpenNLP.Tools.Tokenize.EnglishMaximumEntropyTokenizer(Path.Combine(dataDirectory, "EnglishTok.nbin"));
 
 		}
 		
